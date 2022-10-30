@@ -1,0 +1,60 @@
+---
+title: "XinqianDai PS6"
+author: "Xinqian Dai"
+date: "4/8/2022"
+output: pdf_document
+---
+```{r}
+library(alr4)
+fit <- lm(lifeExpF~group+fertility+ppgdp+pctUrban,data=UN11,x=T)
+X.mat <- fit$x
+H <- X.mat%*%solve(t(X.mat)%*%X.mat)%*%t(X.mat) 
+h <- diag(H)
+p <- dim(X.mat)[2]
+n <- dim(UN11)[1]
+# studentized residual:
+sigma.hat <- summary(fit)$sigma
+r <- resid(fit)/(sigma.hat*sqrt(1-h))
+# studentized deleted residual (book eq 9.19)
+t <- r*sqrt((n-p)/(n-p+1-r^2))
+```
+
+#1
+```{r}
+plot(fit,which=3)
+plot(x = fitted(fit), y = sqrt(abs(t)))
+```
+#2
+```{r}
+UN11$row_num <- seq.int(nrow(UN11))
+no.outlier <- UN11[-c(24, 101, 125), ]
+myfit <- cooks.distance(fit)
+sort(myfit)
+```
+The potential outliers from #1 are Lesotho, Botswana, and Nauru. They have the largest cook's distance.
+```{r}
+fit <- lm(lifeExpF~group+fertility+ppgdp+pctUrban,data=UN11,x=T)
+plot(fit)
+summary(fit)
+```
+
+```{r}
+no.outlier.fit<-lm(lifeExpF~group+fertility+ppgdp+pctUrban,data=no.outlier,x=T)
+summary(no.outlier.fit)
+plot(no.outlier.fit)
+```
+According to  summary(fit) and summary(no.outlier.fit), the estimate of groupafrica changes a lot from -1.039e+01 to -9.542e+00 after removing the outliers.
+Also, the p value of ppgdp changes from 0.03992 to  0.065591> 0.05, which makes it insignificant. Therefore, the outliers change the estimated model substantially.
+
+#3
+```{r}
+anova(fit)
+```
+Sum of squares = treatment sum of squares (SST) + sum of squares of the residual error (SSE). The column splits the total variation of lifeExpF into different sources of variation. 12563.0 is the amount of variation caused by group; 3170.9 is the additional amount of variation attributed to fertility after group is already in the model; 305.8  is the additional amount that ppgdp decreases SSE by after group and fertilizer is already in the model;189.9 is the additional amount that pctUrban decreases SSE by after group, fertilizer, and ppgdp is already in the model. 4063.6 is the sum of squares of the residual error (SSE),
+
+#4
+```{r}
+fit.intercept <-lm(lifeExpF~1, data=UN11) 
+anova(fit,fit.intercept)
+```
+anova() shows a F value of 154.16 and p,2.2e-16, which are the same as the results in the last row of summary(fit). Since p<0.05, we reject the null hypothesis, and the full model is better.

@@ -1,0 +1,86 @@
+---
+title: "Xinqian Dai Quiz1"
+author: "Xinqian Dai"
+date: "2/22/2022"
+output: pdf_document
+---
+
+
+```{r}
+setwd("/Users/demix9/Desktop")
+data <-read.csv(file="bass.csv")
+```
+
+
+
+#1
+
+```{r}
+fit <- lm(Length~Age,data=data)
+summary(fit)
+```
+
+We fit a simple linear regression to these data:
+
+Length$_i$ = $\beta_0 + \beta_1$ Age$_i + e_i$, where i=1,$\ldots$,75 and e$_i$s are iid with mean 0 and variance $\sigma^2.$
+
+The estimated model is E(Length) = 65.5272 + 30.3239 Age.
+
+This means that when Age=0, our estimate of E(Length)=65.5272 and when counts goes up by 1 unit, the estimate of E(Length) goes up by 30.3239 units.
+
+Our estimate of $\sigma^2$ is 28.65$^2$ = 820.8225.
+The estimated $\sigma$ = 28.65 is interpretable as proportional to the range of the size of the errors around the the line - most of the errors will fall within +/- 3$\sigma$ = +/- 85.95.
+
+
+#2
+
+```{r}
+plot(data$Age,data$Length,xlab="Age",ylab="Length")
+abline(fit,col="red",lwd=3)
+```
+
+
+#3
+
+We make a confidence interval for $\beta_1$:
+```{r}
+confint(fit)[2,]
+```
+Since 0 is not in that 95% confidence interval, we can conclude that $\beta_1$ is non-zero at the 5% level. ie: We can conclude that Age is helpful for predicting Length.
+
+According to the regression model above, the Multiple R-squared is 0.8165, which indicates the regression model predicts responses for new observations very well.
+
+#4
+
+```{r}
+predict(fit,newdata=data.frame(Age=6),interval="prediction")
+```
+The interval is 191.0533 - 303.8877.
+
+E(Length) = 65.5272 + 30.3239 Age. When Age = 6, Length = 247.4705.
+
+#5
+
+```{r}
+predict(fit,newdata=data.frame(Age=0),interval="prediction")
+```
+The interval is 8.876771 - 122.1776.
+E(Length) = 65.5272 + 30.3239 Age. When Age = 0, Length = 65.5272.
+But there's no fish with a age of 0 in the sample, so 0 is outside the range of x-values the data and it's extrapolation. Extrapolation does not give reliable predictions because the regression line may not be valid outside the training data range.
+
+
+#6
+
+The distribution is bimodal because there're two genders and fishes of different gender are likely to have differently lengths. 
+To build a better model for length, we could add an indicator variable and set xi1 = 0 when it's female and xi2 = 1 when it's male.
+Then E(Length$_i$) = $\beta_0 + \beta_2$ Age$_i + e_i$ for female bass, E(Length$_i$) = $\beta_0 + \beta_1 + \beta_2$ Age$_i + e_i$ for male bass.
+
+
+#7
+```{r}
+predict(fit,newdata=data.frame(Age=4),interval="prediction")
+predict(fit,newdata=data.frame(Age=7),interval="prediction")
+```
+Yes, I think the lengths at ages 4 and 7 are very likely to be different.
+The lengths interval for ages 4 is 130.4572 - 243.1882 and the lengths interval for ages 7 is 221.3029 - 334.2859.
+The overlapping interval is 221.3029 - 243.1882 and it's very small. So they are likely to be different.

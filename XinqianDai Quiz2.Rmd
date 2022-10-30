@@ -1,0 +1,42 @@
+---
+title: "XinqianDai Quiz2"
+author: "Xinqian Dai"
+date: "3/8/2022"
+output: pdf_document
+---
+#1
+```{r}
+setwd("/Users/demix9/Desktop")
+data <-read.csv(file="bass.csv")
+pairs(data)
+```
+The scatterplot matrix indicates that the bivariate relationships among age, length and scale are all positive. Ages are rounded to the nearest integer so there're straight lines in those four plots included ages. The correlation between length and scale are strongly positive.
+
+#2
+```{r}
+fit.both <- lm(Length~Age+Scale,data=data)
+summary(fit.both)
+```
+
+Multiple Linear Regression Model:
+Length$_i$ = $\beta_0 + \beta_1$ Age$_i + \beta_2$ Scale$_i + e_i$;
+$\beta$s and $\sigma$^2 are unknown parameters that have to be estimated.
+
+The estimated model is
+E(Length) = 49.4476 + 12.9131 Age + 15.22 Scale;
+
+The estimated of $\sigma$ is 18.57. The estimate of $\sigma$^2 is 18.57^2 = 344.8449.
+
+#3
+```{r}
+confint(fit.both, level=0.95)
+confint(fit.both, level=0.99)
+```
+Since 0 is not in that 95% and 99% confidence intervals, we can conclude that $\beta_1$ and $\beta_2$ are non-zero at 2.5% and 0.5% level. As a result, we can conclude that the model is helpful for predicting Length.
+
+#4
+
+According to part 2,  the multiple R-squared is 0.9231 so the variability is 0.9231.
+
+#5
+The R-squared for multiple linear regression is very large so it's good for predicting length. I think there may be other models that are suitable for this scenario, such as polynomial relationship models.

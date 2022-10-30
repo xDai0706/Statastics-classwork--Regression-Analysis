@@ -1,0 +1,33 @@
+---
+title: "XinqianDai PS1"
+author: "Xinqian"
+date: "1/26/2022"
+output:
+  pdf_document: default
+---
+
+
+```{r}
+setwd("/Users/demix9/Desktop")
+heights <-read.csv(file="heights.csv")
+```
+
+
+
+## 1
+
+```{r}
+plot(heights$mheight,heights$dheight,xlab="moms' heights",ylab="daughters' heights")
+```
+## 2
+```{r}
+summary.table <- 
+    data.frame(n=c(length(heights$mheigh),length(heights$dheight)),
+               means=c(mean(heights$mheight),mean(heights$dheight)),
+               median =c(median(heights$mheight),median(heights$dheight)),
+               sd=c(sd(heights$mheight),sd(heights$dheight)))
+
+row.names(summary.table) <- c("moms' heights","daughters' heights")
+library(knitr)
+kable(summary.table,caption="Summary Statistics",digits=2)
+```

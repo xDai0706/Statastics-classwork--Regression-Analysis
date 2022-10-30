@@ -1,0 +1,84 @@
+---
+title: "XinqianDai PS5"
+author: "Xinqian Dai"
+date: "3/31/2022"
+output: pdf_document
+---
+
+```{r}
+library(alr4)
+data <- data.frame(slim=Highway$slim,htype=Highway$htype,trks=Highway$trks,lograte=log(Highway$rate))
+```
+
+#1
+```{r}
+fit.1 <- lm(lograte~htype, data = data)
+fit.2 <- lm(lograte~slim, data = data)
+fit.3 <- lm(lograte~trks, data = data)
+anova(fit.1)
+anova(fit.2)
+anova(fit.3)
+```
+SSR for highway type is 0.08727; SSR for speed limit is 3.8806; SSR for percentage of truck volume is 2.1966. 
+The model with speed limit has the largest SSR and the smallest SSE, so speed limit matters the most for predicting the accident rate.
+
+#2
+```{r}
+fit.interact<-lm(lograte~.^2,data=data)
+fit.add<-lm(lograte~.,data=data)
+summary(fit.interact)
+summary(fit.add)
+anova(fit.interact,fit.add)
+```
+R^2 of interaction model is slightly larger than that of addition model since interaction model has more Betas, and P is 0.9652>0.05 in F-test so we should not reject the null hypothesis. Therefore, interaction model isn't worthy and the addition model is better.
+
+
+#3
+```{r}
+fit.intercept <-lm(lograte~1, data = data)
+anova(fit.interact,fit.intercept)
+anova(fit.add,fit.intercept)
+```
+When comparing the interact model to the intercept-only model, p value is 0.001085<0.05 so we reject the null hypothesis. Therefore, the interact model model is more useful.
+When comparing the addition model to the intercept-only model, p value is 4.201*10^(-6)<0.05 so we reject the null hypothesis. Therefore, the addition model is more useful.
+
+#4
+```{r}
+confint(fit.add)
+summary(fit.add)
+```
+O is in the confidence interval of htype, and the absolute values of t-values of htype are smaller than 1.96 (i.e. p-values> 0.05),so we cannot conclude the betas are not statistical significantly different from zero. 
+Similarly, O is not in the confidence interval of slim and trks, and the absolute value of t-values of slim and trks are larger than 1.96 (i.e. p-values< 0.05), which means that their betas are statistical significantly different from zero.
+
+Therefore, slim(speed limit) and trks(truks) are statistically significantly related to the log accident rate.
+
+#5
+Use the three simple linear regression models from question1.
+```{r}
+summary(fit.1)
+summary(fit.2)
+summary(fit.3)
+summary(fit.add)
+```
+Since the variability is represented by R^2,
+from the three linear regression models in question1,
+0.1072 variability in log rate is explained by htype,
+0.4765 variability in log rate is explained by slim,
+0.2697 variability in log rate is explained by trks.
+
+From the addition model I chose from question2,
+0.6146 variability in log rate is explained by the covariates.
+
+
+#Extra Credit
+```{r}
+newinteract<-lm(lograte~trks*slim,data=data)
+anova(newinteract,fit.add)
+newadditive<-lm(lograte~trks+slim,data=data)
+anova(newadditive,fit.add)
+anova(newinteract,newadditive)
+```
+Since the highway type is not statistically significant, I remove highway type from both the addition model and the interaction model.
+With anova() to compare full additive model with reduced interaction and additive models, the p values are 0.3497(>0.05) and 0.5585(>0.05).Therefore, the full addition model is not necessary.
+Then with anova() to compare reduced additive model with reduced interaction model, the p value is 0.558(>0.05). Therefore, the reduced interaction model is not necessary, and the reduced addition model is the best.
+
